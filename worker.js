@@ -20,16 +20,41 @@ export default {
             status: 400, headers: { 'Content-Type': 'application/json' },
           });
         }
-        // Store submission in KV if available, otherwise just accept
         const record = {
           discord, player, clipUrl,
           fileName: file ? file.name : null,
           fileSize: file ? file.size : 0,
           submittedAt: new Date().toISOString(),
         };
-        if (env && env.SUBMISSIONS) {
-          const id = crypto.randomUUID();
-          await env.SUBMISSIONS.put(id, JSON.stringify(record));
+        // Send to Discord webhook if configured (attach file if present)
+        const webhook = (env && env.DISCORD_WEBHOOK_APLK) || '';
+        if (webhook) {
+          try {
+            const embed = {
+              title: 'New AppleKour clip submission',
+              color: 0x7b8cff,
+              fields: [
+                { name: 'Discord', value: discord, inline: true },
+                { name: 'Player', value: player, inline: true },
+                { name: 'Clip link', value: clipUrl || '(none)', inline: false },
+                { name: 'File', value: (file ? file.name + ' (' + file.size + ' bytes)' : '(none)'), inline: false },
+              ],
+              timestamp: record.submittedAt,
+            };
+            if (file) {
+              // Send as multipart/form-data with the file attached
+              const fd = new FormData();
+              fd.append('file', file, file.name);
+              fd.append('payload_json', JSON.stringify({ username: 'AppleKour Submissions', embeds: [embed] }));
+              await fetch(webhook, { method: 'POST', body: fd });
+            } else {
+              await fetch(webhook, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: 'AppleKour Submissions', embeds: [embed] }),
+              });
+            }
+          } catch (e) { /* webhook failure should not block submission */ }
         }
         return new Response(JSON.stringify({ ok: true, message: 'Submission received.' }), {
           status: 200, headers: { 'Content-Type': 'application/json' },
