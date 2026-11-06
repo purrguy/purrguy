@@ -258,10 +258,15 @@ h1, h2, h3 { letter-spacing: -0.03em; line-height: 1.1; }
 }
 
 @media (max-width: 720px) {
-  .shell-nav { padding-top: 10px; padding-bottom: 10px; }
-  .shell-links { gap: 2px; }
-  .shell-links a { font-size: 13px; padding: 7px 10px; }
-  .shell-links a.pill { padding: 7px 13px; font-size: 12px; }
+  .shell-nav {
+    padding: 8px 14px;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+  .shell-brand { font-size: 16px; }
+  .shell-links { gap: 0; }
+  .shell-links a { font-size: 12px; padding: 6px 7px; }
+  .shell-links a.pill { font-size: 11px; padding: 6px 10px; }
   .ad-slot { display: none; }
 }
 
