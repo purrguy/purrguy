@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Private View · purrguy.me</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/private-view.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9293377477425523" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <nav class="shell-nav">
+    <div class="shell-brand">purrguy.me</div>
+    <div class="shell-links">
+      <a href="/">Home</a>
+      <a href="/youtube-view">YouTube View</a>
+    </div>
+  </nav>
+
+  <main class="pv-wrap">
+    <header class="pv-head">
+      <span class="eyebrow">Private View</span>
+      <h1>Browse without leaving</h1>
+      <p class="pv-sub">Type a URL to visit it here, or type words to search Google. Everything routes through a proxy you pick.</p>
+    </header>
+
+    <div class="pv-body">
+      <!-- Controls column -->
+      <aside class="pv-controls">
+        <div class="card">
+          <h3>Enter URL or search</h3>
+          <div class="input-group">
+            <input type="text" id="pv-input" placeholder="https://example.com or just search words" autocomplete="off">
+            <button id="pv-go" class="btn btn-primary">Go</button>
+          </div>
+          <p class="hint">Press Enter to go.</p>
+
+          <div class="proxy-section" id="proxy-section">
+            <h3>Proxy IP</h3>
+            <div class="proxy-select-wrap">
+              <select id="proxy-select">
+                <option value="none">Direct connection (no proxy)</option>
+              </select>
+              <button id="proxy-test" class="btn btn-ghost small">Test selected</button>
+            </div>
+            <div class="proxy-status" id="proxy-status"></div>
+            <p class="hint">Selecting a proxy routes your request through that IP. If it doesn't respond, Go stays disabled.</p>
+          </div>
+        </div>
+
+        <div class="card pv-shortcuts">
+          <h3>Quick searches</h3>
+          <div class="shortcuts">
+            <button class="shortcut" data-q="weather">Weather</button>
+            <button class="shortcut" data-q="news">News</button>
+            <button class="shortcut" data-q="github trending">GitHub trending</button>
+            <button class="shortcut" data-q="reddit">Reddit</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- View column -->
+      <section class="pv-viewport">
+        <div class="pv-frame-wrap">
+          <iframe id="pv-frame" src="about:blank" title="Private browsing" allow="fullscreen"></iframe>
+          <div id="pv-loading" class="pv-loading">Loading through proxy&hellip;</div>
+          <div id="pv-error" class="pv-error hidden">
+            <p id="pv-error-msg">Unable to load through the selected proxy.</p>
+            <button id="pv-retry" class="btn btn-ghost">Try again</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="pv-foot">
+      <p>No history is saved on this device. The proxy you choose sees the traffic&mdash;pick one you trust.</p>
+    </footer>
+  </main>
+
+  <script src="/js/private-view.js"></script>
+</body>
+</html>

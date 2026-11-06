@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>purrguy.me</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9293377477425523" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <!-- Left banner ad -->
+  <div class="ad-banner ad-left" id="ad-left">
+    <ins class="adsbygoogle" style="display:inline-block;width:160px;height:600px"></ins>
+  </div>
+
+  <!-- Right banner ad -->
+  <div class="ad-banner ad-right" id="ad-right">
+    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px"></ins>
+  </div>
+
+  <!-- Adblock detector overlay -->
+  <div class="adblock-overlay" id="adblock-overlay">
+    <div class="adblock-card">
+      <h2>Hey, you're blocking ads.</h2>
+      <p>This site stays free because of ads. Please consider disabling your adblocker on purrguy.me — it keeps the lights on and the views private.</p>
+      <div class="adblock-actions">
+        <button class="btn" onclick="document.getElementById('adblock-overlay').style.display='none'">I'll allow ads</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('adblock-overlay').style.display='none'">Maybe later</button>
+      </div>
+      <p class="adblock-note">No worries either way. The tools below still work.</p>
+    </div>
+  </div>
+
+  <a href="#content" class="skip-link">Skip to content</a>
+
+  <nav class="shell-nav">
+    <div class="shell-brand">purrguy.me</div>
+    <div class="shell-links">
+      <a href="/private-view">Private View</a>
+      <a href="/youtube-view">YouTube View</a>
+    </div>
+  </nav>
+
+  <main id="content">
+    <section class="hero">
+      <div class="hero-wrap">
+        <span class="eyebrow">a little corner of the internet</span>
+        <h1>Make something <span class="glitch" data-text="weird.">weird.</span></h1>
+        <p class="sub">This isn't a startup. It's a browser sidebar, a search bar, and a place to watch videos without the algorithm yelling at you.</p>
+        <div class="cta-row">
+          <a href="/private-view" class="btn btn-primary">Go private &rarr;</a>
+          <a href="/youtube-view" class="btn btn-ghost">Watch YouTube &rarr;</a>
+        </div>
+      </div>
+      <div class="hero-doodle"></div>
+    </section>
+
+    <section class="tools">
+      <div class="section-head">
+        <h2>Tools</h2>
+        <p class="sub">Pick one. None of them track you.</p>
+      </div>
+      <div class="tools-grid">
+        <article class="tool-card">
+          <div class="tool-icon">&#128273;</div>
+          <h3>Private View</h3>
+          <p>Search Google or visit any URL without leaving this tab. Routes through your choice of proxy so your IP stays out of the equation.</p>
+          <a href="/private-view" class="btn-link">Open Private View &rarr;</a>
+        </article>
+        <article class="tool-card">
+          <div class="tool-icon">&#128249;</div>
+          <h3>YouTube View</h3>
+          <p>Browse YouTube without Shorts. Pick a video, resize it however you like, and on mobile it rotates 90&deg; for fullscreen comfort.</p>
+          <a href="/youtube-view" class="btn-link">Open YouTube View &rarr;</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="notes">
+      <div class="note-card">
+        <h3>Why this exists</h3>
+        <p>Most "private" browsers still phone home. These pages don't — well, except for the ad above, which pays for the hosting. Everything else runs locally or through a proxy you pick.</p>
+      </div>
+      <div class="note-card">
+        <h3>No shortcuts</h3>
+        <p>No accounts, no keys, no login. Type a URL, hit go. Type words, get Google results. That's it.</p>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>purrguy.me &middot; hand-built, not AI-generated &middot; <a href="/private-view">Private View</a> &middot; <a href="/youtube-view">YouTube View</a></p>
+    </footer>
+  </main>
+
+  <script>
+    // Adblock detector
+    (function checkAds() {
+      var test = document.createElement('div');
+      test.innerHTML = '&nbsp;';
+      test.className = 'adsbox';
+      test.style.position = 'absolute';
+      test.style.top = '-9999px';
+      document.body.appendChild(test);
+      setTimeout(function() {
+        var blocked = test.clientHeight === 0;
+        document.body.removeChild(test);
+        if (blocked) {
+          var overlay = document.getElementById('adblock-overlay');
+          if (overlay) overlay.style.display = 'flex';
+        }
+      }, 1000);
+    })();
+  </script>
+</body>
+</html>
