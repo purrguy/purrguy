@@ -71,9 +71,9 @@
   margin-top: 6px;
 }
 
-.proxy-status.ok { color: #6ee7a8; }
-.proxy-status.bad { color: var(--danger); }
-.proxy-status.checking { color: #f6c453; }
+.proxy-status.ok { color: var(--ink); font-weight: 700; }
+.proxy-status.bad { color: var(--ink); text-decoration: underline; }
+.proxy-status.checking { color: var(--muted); }
 
 .shortcuts { display: flex; flex-wrap: wrap; gap: 8px; }
 
@@ -96,7 +96,7 @@
 
 /* Viewport */
 .pv-viewport {
-  background: #000;
+  background: var(--surface-2);
   border: 1px solid var(--line);
   border-radius: 14px;
   overflow: hidden;
@@ -130,7 +130,7 @@
   justify-content: center;
   gap: 12px;
   color: var(--ink);
-  background: rgba(10, 10, 10, 0.82);
+  background: rgba(255, 255, 255, 0.92);
   z-index: 5;
   font-size: 14px;
 }

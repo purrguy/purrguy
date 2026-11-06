@@ -156,7 +156,7 @@
 
   const fsHint = document.createElement('div');
   fsHint.className = 'yv-fs-hint';
-  fsHint.textContent = 'Drag the yellow handle to move · tap ✕ to close';
+  fsHint.textContent = 'Drag the white handle to move · tap ✕ to close';
 
   const dragHandle = document.createElement('div');
   dragHandle.className = 'yv-fs-drag';
