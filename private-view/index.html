@@ -3,24 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Private View · purrguy.me</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/private-view.css">
-  <link rel="stylesheet" href="/css/style.css">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9293377477425523" crossorigin="anonymous"></script>
-</head>
-<body>
+  <meta name="theme-color" content="#0a0a0a">
 
-  <nav class="shell-nav">
-    <div class="shell-brand">purrguy.me</div>
-    <div class="shell-links">
+  <title>Private View — browse &amp; search without leaving the tab | Purrguy</title>
+  <meta name="description" content="Open any URL or search Google without leaving the page. Private View by Purrguy routes requests through a proxy you choose. No history stored.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://purrguy.me/private-view">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Purrguy">
+  <meta property="og:title" content="Private View — a quieter way to browse">
+  <meta property="og:description" content="Search or open any URL in-tab through a proxy you pick. No accounts, no history saved.">
+  <meta property="og:url" content="https://purrguy.me/private-view">
+
+  <meta name="google-adsense-account" content="ca-pub-9293377477425523">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9293377477425523" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/private-view.css">
+</head>
+<body id="top">
+
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <header class="shell-nav">
+    <a class="shell-brand" href="/"><span class="dot"></span>purrguy</a>
+    <nav class="shell-links">
       <a href="/">Home</a>
       <a href="/youtube-view">YouTube View</a>
-    </div>
-  </nav>
+      <a href="/#projects">Projects</a>
+    </nav>
+  </header>
 
-  <main class="pv-wrap">
+  <main id="main" class="pv-wrap">
     <header class="pv-head">
       <span class="eyebrow">Private View</span>
       <h1>Browse without leaving</h1>
@@ -33,7 +48,7 @@
           <h3>Enter URL or search</h3>
           <div class="input-group">
             <input type="text" id="pv-input" placeholder="https://example.com or just search words" autocomplete="off">
-            <button id="pv-go" class="btn btn-primary">Go</button>
+            <button id="pv-go" class="btn btn-primary small" type="button">Go</button>
           </div>
           <p class="hint">Press Enter to go.</p>
 
@@ -43,20 +58,20 @@
               <select id="proxy-select">
                 <option value="none">Direct connection (no proxy)</option>
               </select>
-              <button id="proxy-test" class="btn btn-ghost small">Test selected</button>
+              <button id="proxy-test" class="btn btn-ghost small" type="button">Test selected</button>
             </div>
             <div class="proxy-status" id="proxy-status"></div>
-            <p class="hint">Selecting a proxy routes your request through that IP. If it doesn't respond, Go stays disabled.</p>
+            <p class="hint">Selecting a proxy routes your request through that IP. If it doesn&rsquo;t respond, Go stays disabled.</p>
           </div>
         </div>
 
         <div class="card pv-shortcuts">
           <h3>Quick searches</h3>
           <div class="shortcuts">
-            <button class="shortcut" data-q="weather">Weather</button>
-            <button class="shortcut" data-q="news">News</button>
-            <button class="shortcut" data-q="github trending">GitHub trending</button>
-            <button class="shortcut" data-q="reddit">Reddit</button>
+            <button class="shortcut" type="button" data-q="weather">Weather</button>
+            <button class="shortcut" type="button" data-q="news">News</button>
+            <button class="shortcut" type="button" data-q="github trending">GitHub trending</button>
+            <button class="shortcut" type="button" data-q="reddit">Reddit</button>
           </div>
         </div>
       </aside>
@@ -67,7 +82,7 @@
           <div id="pv-loading" class="pv-loading">Loading through proxy&hellip;</div>
           <div id="pv-error" class="pv-error hidden">
             <p id="pv-error-msg">Unable to load through the selected proxy.</p>
-            <button id="pv-retry" class="btn btn-ghost">Try again</button>
+            <button id="pv-retry" class="btn btn-ghost" type="button">Try again</button>
           </div>
         </div>
       </section>

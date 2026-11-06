@@ -3,119 +3,330 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>purrguy.me</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css">
+  <meta name="theme-color" content="#0a0a0a">
+
+  <title>Purrguy — projects, tools &amp; experiments</title>
+  <meta name="description" content="Purrguy is a beginner scripter building in public: LimeVM, Greedy Hudzell, Rainware, Aurora and free browser tools — Private View and YouTube View without the Shorts algorithm.">
+  <meta name="keywords" content="purrguy, LimeVM, Greedy Hudzell, Rainware, Aurora, Roblox scripts, Lua obfuscator, private browser, YouTube without shorts">
+  <meta name="author" content="Purrguy">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://purrguy.me/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Purrguy">
+  <meta property="og:title" content="Purrguy — projects, tools &amp; experiments">
+  <meta property="og:description" content="Small projects, big ideas. Scripts, tools and experiments by Purrguy — plus a private browser and a YouTube viewer without Shorts.">
+  <meta property="og:url" content="https://purrguy.me/">
+  <meta property="og:locale" content="en_US">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Purrguy — projects, tools &amp; experiments">
+  <meta name="twitter:description" content="Small projects, big ideas. Scripts, tools and experiments by Purrguy.">
+
   <!-- Google AdSense -->
   <meta name="google-adsense-account" content="ca-pub-9293377477425523">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9293377477425523" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/home.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://purrguy.me/#website",
+        "url": "https://purrguy.me/",
+        "name": "Purrguy",
+        "alternateName": ["purrguy.me", "Purrguy's corner of the internet"],
+        "description": "Projects, tools and experiments by Purrguy — a beginner scripter building in public.",
+        "inLanguage": "en",
+        "publisher": { "@id": "https://purrguy.me/#person" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://purrguy.me/#person",
+        "name": "Purrguy",
+        "url": "https://purrguy.me/",
+        "jobTitle": "Beginner scripter",
+        "description": "Beginner scripter learning in public: Lua, UI experiments and web projects.",
+        "sameAs": [
+          "https://github.com/purrguy",
+          "https://youtube.com/@purrguy"
+        ]
+      },
+      {
+        "@type": "ItemList",
+        "name": "Purrguy projects",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "LimeVM", "url": "https://lime.purrguy.me" },
+          { "@type": "ListItem", "position": 2, "name": "Greedy Hudzell", "url": "https://greedyhudzell.xyz" },
+          { "@type": "ListItem", "position": 3, "name": "Rainware", "url": "https://rainware.greedyhudzell.xyz" },
+          { "@type": "ListItem", "position": 4, "name": "Purrguy Private View", "url": "https://purrguy.me/private-view" },
+          { "@type": "ListItem", "position": 5, "name": "Purrguy YouTube View", "url": "https://purrguy.me/youtube-view" }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
-<body>
+<body id="top">
 
-  <!-- Left banner ad -->
-  <div class="ad-banner ad-left" id="ad-left">
-    <ins class="adsbygoogle" style="display:inline-block;width:160px;height:600px"></ins>
-  </div>
+  <a href="#main" class="skip-link">Skip to content</a>
 
-  <!-- Right banner ad -->
-  <div class="ad-banner ad-right" id="ad-right">
-    <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px"></ins>
-  </div>
+  <header class="shell-nav">
+    <a class="shell-brand" href="/"><span class="dot"></span>purrguy</a>
+    <nav class="shell-links">
+      <a href="#tools">Tools</a>
+      <a href="#projects">Projects</a>
+      <a class="hide-sm" href="#about">About</a>
+      <a href="#community">Community</a>
+      <a class="pill" href="https://youtube.com/@purrguy" target="_blank" rel="noopener">YouTube</a>
+    </nav>
+  </header>
 
-  <!-- Adblock detector overlay -->
+  <main id="main">
+
+    <!-- ---------- Hero ---------- -->
+    <section class="hero wrap">
+      <span class="eyebrow">Personal site / Learning by building</span>
+      <h1>Small projects.<br><span class="accent">Big ideas.</span></h1>
+      <p class="intro">
+        Hey, I'm <strong>Purrguy</strong> — a beginner scripter exploring code by making useful tools,
+        game scripts, UI libraries, and little experiments. This is my corner of the internet, where
+        all my projects come together.
+      </p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#projects">Explore projects</a>
+        <a class="btn" href="#tools">Try the tools</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><strong>06</strong><span>projects &amp; experiments</span></div>
+        <div class="stat"><strong>02</strong><span>free browser tools</span></div>
+        <div class="stat"><strong>Always</strong><span>learning in public</span></div>
+      </div>
+    </section>
+
+    <!-- ---------- Tools ---------- -->
+    <section id="tools" class="section wrap">
+      <div class="head">
+        <div>
+          <div class="kicker">00 / Built in</div>
+          <h2>Tools that live here</h2>
+        </div>
+        <p class="desc">No accounts, no tracking. Both run right in this site.</p>
+      </div>
+
+      <div class="tools-grid">
+        <a class="tool" href="/private-view">
+          <span class="glyph">&#128273;</span>
+          <h3>Private View</h3>
+          <p>Search Google or open any URL without leaving the tab. Routes through a proxy you pick, so your IP stays out of the equation.</p>
+          <span class="go">Open Private View &rarr;</span>
+        </a>
+        <a class="tool" href="/youtube-view">
+          <span class="glyph">&#128249;</span>
+          <h3>YouTube View</h3>
+          <p>Browse YouTube without Shorts. Resize the player, or flip it fullscreen on mobile and drag it wherever you want.</p>
+          <span class="go">Open YouTube View &rarr;</span>
+        </a>
+      </div>
+
+      <div class="ad-slot">
+        <!-- Paste your AdSense ad unit here (add data-ad-slot once created) -->
+        <ins class="adsbygoogle" style="display:block;width:100%" data-ad-client="ca-pub-9293377477425523" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      </div>
+    </section>
+
+    <!-- ---------- Projects ---------- -->
+    <section id="projects" class="section wrap">
+      <div class="head">
+        <div>
+          <div class="kicker">01 / Things I've made</div>
+          <h2>Projects &amp; experiments</h2>
+        </div>
+        <p class="desc">Scripts, tools, and experiments. Some are ready to explore; others are still evolving.</p>
+      </div>
+
+      <div class="filters">
+        <button class="filter active" data-filter="all" type="button">All projects</button>
+        <button class="filter" data-filter="tool" type="button">Tools</button>
+        <button class="filter" data-filter="script" type="button">Scripts</button>
+        <button class="filter" data-filter="library" type="button">Libraries</button>
+        <button class="filter" data-filter="wip" type="button">In progress</button>
+      </div>
+
+      <div class="grid">
+        <a class="project" data-category="tool" href="https://lime.purrguy.me" target="_blank" rel="noopener">
+          <div class="ptop"><span class="glyph">L</span><span class="tag">TOOL</span></div>
+          <h3>LimeVM</h3>
+          <p>A free custom VM Lua obfuscator for experimenting with code protection.</p>
+          <div class="pfoot"><span class="url">lime.purrguy.me</span><span class="arrow">&rarr;</span></div>
+        </a>
+
+        <a class="project" data-category="tool" href="https://gen.greedyhudzell.xyz" target="_blank" rel="noopener">
+          <div class="ptop"><span class="glyph">G</span><span class="tag">TOOL</span></div>
+          <h3>Roblox Account Generator</h3>
+          <p>A Roblox account generation project in the Greedy Hudzell ecosystem.</p>
+          <div class="pfoot"><span class="url">gen.greedyhudzell.xyz</span><span class="arrow">&rarr;</span></div>
+        </a>
+
+        <a class="project" data-category="tool" href="/youtube-view">
+          <div class="ptop"><span class="glyph">Y</span><span class="tag">TOOL</span></div>
+          <h3>YouTube View</h3>
+          <p>Watch YouTube without Shorts, with a resizable and flippable player.</p>
+          <div class="pfoot"><span class="url">purrguy.me/youtube-view</span><span class="arrow">&rarr;</span></div>
+        </a>
+
+        <a class="project" data-category="library" href="https://github.com/purrguy/aurora" target="_blank" rel="noopener">
+          <div class="ptop"><span class="glyph">A</span><span class="tag">LIBRARY</span></div>
+          <h3>Aurora</h3>
+          <p>A UI library theme project. Source code on GitHub.</p>
+          <div class="pfoot"><span class="url">github.com/purrguy/aurora</span><span class="arrow">&rarr;</span></div>
+        </a>
+
+        <a class="project" data-category="script" href="https://greedyhudzell.xyz" target="_blank" rel="noopener">
+          <div class="ptop"><span class="glyph">P</span><span class="tag">SCRIPT</span></div>
+          <h3>Greedy Hudzell</h3>
+          <p>A script project for Parkour Legacy, with its own community.</p>
+          <div class="pfoot"><span class="url">greedyhudzell.xyz</span><span class="arrow">&rarr;</span></div>
+        </a>
+
+        <a class="project" data-category="script" href="https://rainware.greedyhudzell.xyz" target="_blank" rel="noopener">
+          <div class="ptop"><span class="glyph">R</span><span class="tag">SCRIPT</span></div>
+          <h3>Rainware</h3>
+          <p>An Arcane Lineage script project focused on experimentation.</p>
+          <div class="pfoot"><span class="url">rainware.greedyhudzell.xyz</span><span class="arrow">&rarr;</span></div>
+        </a>
+
+        <a class="project" data-category="tool" href="/private-view">
+          <div class="ptop"><span class="glyph">&#128273;</span><span class="tag">TOOL</span></div>
+          <h3>Private View</h3>
+          <p>Browse and search without leaving the tab, through a proxy you choose.</p>
+          <div class="pfoot"><span class="url">purrguy.me/private-view</span><span class="arrow">&rarr;</span></div>
+        </a>
+
+        <div class="project" data-category="wip">
+          <div class="ptop"><span class="glyph">P</span><span class="tag">WIP</span></div>
+          <h3>Purrmium</h3>
+          <p>A work-in-progress browser project. More details as it takes shape.</p>
+          <div class="pfoot"><span class="url">Currently cooking&hellip;</span><span class="arrow">&hellip;</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- About ---------- -->
+    <section id="about" class="section wrap">
+      <div class="about">
+        <div>
+          <div class="kicker">02 / About</div>
+          <h2>Still learning.<br>Always building.</h2>
+        </div>
+        <div>
+          <p>I'm a beginner scripter learning through real projects instead of just tutorials. I like figuring out how things work, trying new ideas, and turning experiments into something people can use.</p>
+          <p>These projects are a work in progress — just like my skills. I'm here to keep learning and see where curiosity leads.</p>
+          <div class="chips">
+            <span class="chip">Scripting</span>
+            <span class="chip">Lua</span>
+            <span class="chip">UI experiments</span>
+            <span class="chip">Web projects</span>
+            <span class="chip">Learning in public</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- Community ---------- -->
+    <section id="community" class="section wrap">
+      <div class="head">
+        <div>
+          <div class="kicker">03 / Find your people</div>
+          <h2>Join the communities</h2>
+        </div>
+        <p class="desc">Follow updates, hang out, or ask questions.</p>
+      </div>
+
+      <div class="communities">
+        <a class="community" href="https://discord.gg/sbVuaT9a2T" target="_blank" rel="noopener">
+          <span class="glyph">#</span><span><strong>Greedy Hudzell</strong><small>Discord community</small></span>
+        </a>
+        <a class="community" href="https://discord.gg/jAusjp8pUs" target="_blank" rel="noopener">
+          <span class="glyph">R</span><span><strong>Rainware</strong><small>Discord community</small></span>
+        </a>
+        <a class="community" href="https://discord.gg/ZHuzYBnwSY" target="_blank" rel="noopener">
+          <span class="glyph">L</span><span><strong>LimeVM</strong><small>Discord community</small></span>
+        </a>
+        <a class="community" href="https://youtube.com/@purrguy" target="_blank" rel="noopener">
+          <span class="glyph">Y</span><span><strong>YouTube</strong><small>@purrguy</small></span>
+        </a>
+      </div>
+
+      <div class="ad-slot">
+        <!-- Paste your AdSense ad unit here (add data-ad-slot once created) -->
+        <ins class="adsbygoogle" style="display:block;width:100%" data-ad-client="ca-pub-9293377477425523" data-ad-format="auto" data-full-width-responsive="true"></ins>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div>Made with curiosity by <strong>Purrguy</strong>.</div>
+    <div>Beginner scripter / Building in public</div>
+    <a href="#top">Back to top</a>
+  </footer>
+
+  <!-- AdSense blocker notice: only shows when the AdSense script itself fails to load -->
   <div class="adblock-overlay" id="adblock-overlay">
     <div class="adblock-card">
       <h2>Hey, you're blocking ads.</h2>
-      <p>This site stays free because of ads. Please consider disabling your adblocker on purrguy.me — it keeps the lights on and the views private.</p>
+      <p>This site stays free because of ads. Turning off your blocker on purrguy.me keeps the lights on and the views private.</p>
       <div class="adblock-actions">
-        <button class="btn" onclick="document.getElementById('adblock-overlay').style.display='none'">I'll allow ads</button>
-        <button class="btn btn-ghost" onclick="document.getElementById('adblock-overlay').style.display='none'">Maybe later</button>
+        <button class="btn btn-primary" type="button" data-close-overlay>I'll allow ads</button>
+        <button class="btn btn-ghost" type="button" data-close-overlay>Maybe later</button>
       </div>
-      <p class="adblock-note">No worries either way. The tools below still work.</p>
+      <p class="hint">No worries either way — the tools still work.</p>
     </div>
   </div>
 
-  <a href="#content" class="skip-link">Skip to content</a>
-
-  <nav class="shell-nav">
-    <div class="shell-brand">purrguy.me</div>
-    <div class="shell-links">
-      <a href="/private-view">Private View</a>
-      <a href="/youtube-view">YouTube View</a>
-    </div>
-  </nav>
-
-  <main id="content">
-    <section class="hero">
-      <div class="hero-wrap">
-        <span class="eyebrow">a little corner of the internet</span>
-        <h1>Make something <span class="glitch" data-text="weird.">weird.</span></h1>
-        <p class="sub">This isn't a startup. It's a browser sidebar, a search bar, and a place to watch videos without the algorithm yelling at you.</p>
-        <div class="cta-row">
-          <a href="/private-view" class="btn btn-primary">Go private &rarr;</a>
-          <a href="/youtube-view" class="btn btn-ghost">Watch YouTube &rarr;</a>
-        </div>
-      </div>
-      <div class="hero-doodle"></div>
-    </section>
-
-    <section class="tools">
-      <div class="section-head">
-        <h2>Tools</h2>
-        <p class="sub">Pick one. None of them track you.</p>
-      </div>
-      <div class="tools-grid">
-        <article class="tool-card">
-          <div class="tool-icon">&#128273;</div>
-          <h3>Private View</h3>
-          <p>Search Google or visit any URL without leaving this tab. Routes through your choice of proxy so your IP stays out of the equation.</p>
-          <a href="/private-view" class="btn-link">Open Private View &rarr;</a>
-        </article>
-        <article class="tool-card">
-          <div class="tool-icon">&#128249;</div>
-          <h3>YouTube View</h3>
-          <p>Browse YouTube without Shorts. Pick a video, resize it however you like, and on mobile it rotates 90&deg; for fullscreen comfort.</p>
-          <a href="/youtube-view" class="btn-link">Open YouTube View &rarr;</a>
-        </article>
-      </div>
-    </section>
-
-    <section class="notes">
-      <div class="note-card">
-        <h3>Why this exists</h3>
-        <p>Most "private" browsers still phone home. These pages don't — well, except for the ad above, which pays for the hosting. Everything else runs locally or through a proxy you pick.</p>
-      </div>
-      <div class="note-card">
-        <h3>No shortcuts</h3>
-        <p>No accounts, no keys, no login. Type a URL, hit go. Type words, get Google results. That's it.</p>
-      </div>
-    </section>
-
-    <footer class="site-footer">
-      <p>purrguy.me &middot; hand-built, not AI-generated &middot; <a href="/private-view">Private View</a> &middot; <a href="/youtube-view">YouTube View</a></p>
-    </footer>
-  </main>
-
   <script>
-    // Adblock detector
-    (function checkAds() {
-      var test = document.createElement('div');
-      test.innerHTML = '&nbsp;';
-      test.className = 'adsbox';
-      test.style.position = 'absolute';
-      test.style.top = '-9999px';
-      document.body.appendChild(test);
-      setTimeout(function() {
-        var blocked = test.clientHeight === 0;
-        document.body.removeChild(test);
-        if (blocked) {
-          var overlay = document.getElementById('adblock-overlay');
-          if (overlay) overlay.style.display = 'flex';
-        }
-      }, 1000);
+    // Ad blocker check: if the AdSense script never defines window.adsbygoogle, it was blocked.
+    window.setTimeout(function () {
+      if (typeof window.adsbygoogle === 'undefined') {
+        var overlay = document.getElementById('adblock-overlay');
+        if (overlay) overlay.classList.add('open');
+      }
+    }, 1800);
+
+    document.querySelectorAll('[data-close-overlay]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.getElementById('adblock-overlay').classList.remove('open');
+      });
+    });
+
+    // Project filters
+    (function () {
+      var buttons = document.querySelectorAll('.filter');
+      var cards = document.querySelectorAll('.project[data-category]');
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          buttons.forEach(function (b) { b.classList.toggle('active', b === btn); });
+          cards.forEach(function (card) {
+            var show = btn.dataset.filter === 'all' || card.dataset.category === btn.dataset.filter;
+            card.hidden = !show;
+          });
+        });
+      });
     })();
+
+    // Spotlight follow on project cards
+    document.querySelectorAll('.project').forEach(function (card) {
+      card.addEventListener('mousemove', function (e) {
+        var r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+        card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+      });
+    });
   </script>
 </body>
 </html>
