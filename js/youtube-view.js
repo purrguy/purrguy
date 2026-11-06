@@ -171,6 +171,8 @@
 
   let fsOpen = false;
   let playing = true;
+  let prevW = '';
+  let prevH = '';
 
   function setPlayIcon() {
     playBtn.innerHTML = playing ? '&#10074;&#10074;' : '&#9654;';
@@ -200,6 +202,13 @@
   function openFS() {
     if (!currentVideo) return;
     fsOpen = true;
+
+    // Inline sizes (set on desktop) would beat the fullscreen CSS — stash and clear them.
+    prevW = videoBox.style.width;
+    prevH = videoBox.style.height;
+    videoBox.style.width = '';
+    videoBox.style.height = '';
+
     videoBox.classList.add('yv-fs');
     container.classList.add('fs-open');
     document.body.classList.add('yv-fs-lock');
@@ -229,6 +238,9 @@
     fsHint.classList.remove('open');
     videoBox.style.removeProperty('--fsx');
     videoBox.style.removeProperty('--fsy');
+
+    videoBox.style.width = prevW;
+    videoBox.style.height = prevH;
   }
 
   fullscreenBtn.addEventListener('click', () => {
