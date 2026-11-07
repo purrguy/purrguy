@@ -37,7 +37,7 @@ const TRANSLIT = {
   а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e', ж: 'zh', з: 'z',
   и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r',
   с: 's', т: 't', у: 'u', ф: 'f', х: 'h', ц: 'c', ч: 'ch', ш: 'sh', щ: 'sch',
-  ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya'
+  ъ: '', ы: 'y', ь: '', э: 'e', ю: 'u', я: 'ya'
 };
 
 function normalise(s) {
@@ -57,6 +57,35 @@ function commonPrefix(a, b) {
   return n;
 }
 
+function distance(a, b) {
+  if (Math.abs(a.length - b.length) > 1) return 2;
+  const m = a.length;
+  const n = b.length;
+  let prev = Array.from({ length: n + 1 }, (_, i) => i);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) {
+      cur[j] = Math.min(
+        prev[j] + 1,
+        cur[j - 1] + 1,
+        prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+      );
+    }
+    prev = cur;
+  }
+  return prev[n];
+}
+
+function tokenMatch(queryToken, titleToken) {
+  if (!queryToken || !titleToken) return false;
+  if (titleToken === queryToken) return true;
+  if (queryToken.length >= 3 && titleToken.startsWith(queryToken)) return true;
+  if (titleToken.length >= 3 && queryToken.startsWith(titleToken)) return true;
+  if (commonPrefix(queryToken, titleToken) >= Math.min(4, queryToken.length)) return true;
+  if (queryToken.length >= 3 && titleToken.length >= 3 && distance(queryToken, titleToken) <= 1) return true;
+  return false;
+}
+
 function scoreItem(query, item, index) {
   const qn = normalise(query);
   const tn = normalise(item.title);
@@ -65,7 +94,7 @@ function scoreItem(query, item, index) {
 
   let hits = 0;
   for (const qt of qTokens) {
-    if (tTokens.some((tt) => tt === qt || tt.startsWith(qt) || qt.startsWith(tt) || commonPrefix(qt, tt) >= Math.min(4, qt.length))) {
+    if (tTokens.some((tt) => tokenMatch(qt, tt))) {
       hits++;
     }
   }
@@ -173,9 +202,13 @@ function parseResults(html, base, query) {
 
   scored.sort((a, b) => b.score - a.score);
 
-  const top = scored[0];
-  const exact = Boolean(top && top.exact && scored.length > 0);
-  return { items: scored.slice(0, 18), exact };
+  // Prefer genuine title matches; only pad with the site's own list when very few match.
+  const strong = scored.filter((item) => item.score >= 20);
+  const final = strong.length > 0 ? strong : scored;
+
+  const top = final[0];
+  const exact = Boolean(top && top.exact && final.length > 0);
+  return { items: final.slice(0, 18), exact };
 }
 
 function unwrapImages(html) {
