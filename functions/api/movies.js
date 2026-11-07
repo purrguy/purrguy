@@ -138,14 +138,15 @@ function parseResults(html, base, query) {
     const yearMatch = block.match(/Год выпуска:\s*(?:<[^>]+>\s*)*(\d{4})/i) || title.match(/\((\d{4})\)\s*$/);
 
     const fields = {};
-    const fieldRe = /<div class="movie__">([\s\S]*?)<\/div>/gi;
+    const fieldRe = /<div class="movie__info-item">([\s\S]*?)<\/div>/gi;
     let fm;
     while ((fm = fieldRe.exec(block))) {
       const raw = text(fm[1]);
-      const split = raw.match(/^([^:]{2,24}):\s*(.*)$/);
+      const split = raw.match(/^([^:]{2,26}):\s*(.*)$/);
       if (split) fields[split[1].trim()] = split[2].trim();
-      else if (raw.length > 70 && !fields.__desc) fields.__desc = raw;
     }
+    const descMatch = block.match(/<div class="movie__info-desc">([\s\S]*?)<\/div>/i);
+    const description = descMatch ? text(descMatch[1]) : '';
 
     items.push({
       id: starts[i].id,
@@ -157,7 +158,7 @@ function parseResults(html, base, query) {
       quality: fields['Качество'] || '',
       country: fields['Страна'] || '',
       duration: fields['Продолжительность'] || '',
-      description: fields.__desc || '',
+      description: description || '',
       kp: (block.match(/KP\s*([\d.]+)/i) || [])[1] || '',
       imdb: (block.match(/IMDB\s*([\d.]+)/i) || [])[1] || '',
       _index: i
