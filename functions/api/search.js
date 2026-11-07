@@ -43,7 +43,7 @@ function clean(html, origin) {
     html = html.replace(/<base[^>]*>/i, '');
     html = html.replace(/<head>/i, '<head><base href="' + origin + '/">');
     html = html.replace(/(<a\s+[^>]*?\shref=["'])((?:https?:)?\/\/[^"']+)(["'])/gi,
-      (m, prefix, href, quote) => prefix + '/api/browse?target=' + encodeURIComponent(href) + quote);
+      (m, prefix, href, quote) => prefix + 'https://purrguy.me/api/browse?target=' + encodeURIComponent(href) + quote);
   } catch {}
   return html;
 }

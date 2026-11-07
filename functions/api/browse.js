@@ -34,13 +34,13 @@ function rewriteHtml(html, origin) {
     // Inject base tag right after <head>
     out = out.replace(/<head>/i, '<head><base href="' + origin + '/">');
 
-    // Rewrite absolute anchor hrefs
+    // Rewrite absolute anchor hrefs to route through the proxy
     out = out.replace(/(<a\s+[^>]*?\shref=["'])((?:https?:)?\/\/[^"']+)(["'])/gi,
-      (m, prefix, href, quote) => prefix + '/api/browse?target=' + encodeURIComponent(href) + quote);
+      (m, prefix, href, quote) => prefix + 'https://purrguy.me/api/browse?target=' + encodeURIComponent(href) + quote);
 
-    // Rewrite absolute form actions (GET forms stay in the proxy)
+    // Rewrite absolute form actions to route through the proxy
     out = out.replace(/(<form\s+[^>]*?\saction=["'])((?:https?:)?\/\/[^"']+)(["'])/gi,
-      (m, prefix, action, quote) => prefix + '/api/browse?target=' + encodeURIComponent(action) + quote);
+      (m, prefix, action, quote) => prefix + 'https://purrguy.me/api/browse?target=' + encodeURIComponent(action) + quote);
 
     return out;
   } catch {
