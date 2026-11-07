@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+
+  <title>Movies — search &amp; watch without the noise | Purrguy</title>
+  <meta name="description" content="Search for a movie and watch it right here. A clean, resizable player with a flippable mobile fullscreen — no Shorts, no feed, no algorithm.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://purrguy.me/movies">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Purrguy">
+  <meta property="og:title" content="Movies — search &amp; watch without the noise">
+  <meta property="og:description" content="Search a movie, press play, flip it fullscreen on mobile. Same player as YouTube View.">
+  <meta property="og:url" content="https://purrguy.me/movies">
+
+  <meta name="google-adsense-account" content="ca-pub-9293377477425523">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9293377477425523" crossorigin="anonymous"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/style.css?v=20261107a">
+  <link rel="stylesheet" href="/css/youtube-view.css?v=20261107a">
+  <link rel="stylesheet" href="/css/movies.css?v=20261107a">
+</head>
+<body id="top">
+
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <header class="shell-nav">
+    <a class="shell-brand" href="/"><span class="dot"></span>purrguy</a>
+    <nav class="shell-links">
+      <a href="/">Home</a>
+      <a href="/youtube-view">YouTube</a>
+      <a href="/movies">Movies</a>
+      <a class="hide-sm" href="/private-view">Private View</a>
+    </nav>
+  </header>
+
+  <main id="main" class="yv-wrap">
+    <header class="yv-head">
+      <span class="eyebrow">Movies</span>
+      <h1>Find it. Press play.</h1>
+      <p class="yv-sub">
+        Search any movie. If the exact one isn't there, you'll get the closest matches instead.
+        The player resizes on desktop, and fullscreen flips it on your phone &mdash; drag it, pause it, close it.
+      </p>
+    </header>
+
+    <div class="yv-body">
+      <aside class="yv-browse">
+        <div class="card">
+          <h3>Search movies</h3>
+          <div class="input-group">
+            <input type="text" id="mv-search" placeholder="e.g. Matrix, Dune, 2012&hellip;" autocomplete="off">
+            <button id="mv-search-btn" class="btn btn-primary small" type="button">Search</button>
+          </div>
+          <div id="mv-note" class="mv-note" role="status"></div>
+          <div id="mv-results" class="yv-results mv-results"></div>
+        </div>
+      </aside>
+
+      <section class="yv-player-wrap">
+        <div class="yv-player-container" id="mv-player-container">
+          <div id="mv-placeholder" class="mv-placeholder">
+            <div class="yv-placeholder-icon">&#127916;</div>
+            <p>Pick a movie to start watching</p>
+            <p class="yv-hint">Search on the left. On mobile, fullscreen flips the video.</p>
+          </div>
+
+          <div id="mv-video-box" class="yv-video-box hidden">
+            <div class="yv-video-inner">
+              <iframe id="mv-iframe"
+                      src=""
+                      title="Movie player"
+                      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                      allowfullscreen
+                      referrerpolicy="origin"></iframe>
+            </div>
+            <div class="yv-resize-handle" id="mv-resize-handle" aria-hidden="true">&#x21F6;</div>
+          </div>
+        </div>
+
+        <div class="mv-now">
+          <strong id="mv-title">Nothing playing</strong>
+          <span id="mv-meta" class="mv-meta"></span>
+        </div>
+
+        <div class="yv-actions">
+          <button id="mv-fullscreen" class="btn btn-primary" type="button">Fullscreen</button>
+          <button id="mv-reset" class="btn btn-ghost" type="button">Reset size</button>
+          <a id="mv-source" class="btn btn-ghost" target="_blank" rel="noopener" style="display:none">Open source</a>
+        </div>
+      </section>
+    </div>
+
+    <footer class="yv-foot">
+      <p>Movies are streamed from the Kinogo mirror network. Purrguy just gives you a calmer player.</p>
+    </footer>
+  </main>
+
+  <script src="/js/movies.js?v=20261107a"></script>
+</body>
+</html>

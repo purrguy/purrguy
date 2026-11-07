@@ -117,29 +117,42 @@
     if (!value || !value.trim()) return;
     value = value.trim();
 
-    const url = isUrl(value) ? ensureHttp(value) : 'https://www.google.com/search?q=' + encodeURIComponent(value);
+    const isSearch = !isUrl(value);
+    const url = isSearch ? null : ensureHttp(value);
 
     setLoading(true);
     goBtn.disabled = true;
 
     try {
-      const params = new URLSearchParams({ target: url });
-      if (selectedProxy) params.set('proxy', selectedProxy.url);
-
-      const res = await fetch('/api/browse?' + params.toString(), {
-        headers: { 'Accept': 'text/html' }
-      });
+      let res;
+      if (isSearch) {
+        res = await fetch('/api/search?q=' + encodeURIComponent(value), {
+          headers: { 'Accept': 'text/html' }
+        });
+      } else {
+        const params = new URLSearchParams({ target: url });
+        if (selectedProxy) params.set('proxy', selectedProxy.url);
+        res = await fetch('/api/browse?' + params.toString(), {
+          headers: { 'Accept': 'text/html' }
+        });
+      }
 
       if (!res.ok) throw new Error('Server returned ' + res.status);
 
       const html = await res.text();
-      const rewritten = rewriteUrls(html, new URL(url).origin);
+      const baseOrigin = isSearch ? 'https://html.duckduckgo.com/' : new URL(url).origin;
+      const rewritten = rewriteUrls(html, baseOrigin);
 
       // Load into iframe
       const doc = frame.contentDocument || frame.contentWindow.document;
       doc.open();
       doc.write(rewritten);
       doc.close();
+
+      if (!isSearch && res.headers.get('X-Browse-Direct') === '1' && selectedProxy) {
+        proxyStatus.textContent = 'Proxy blocked — loaded directly through Cloudflare instead.';
+        proxyStatus.className = 'proxy-status';
+      }
 
       setLoading(false);
       goBtn.disabled = false;
@@ -182,5 +195,5 @@
 
   // ---------- Init ----------
   loadProxies();
-  goBtn.disabled = true;
+  goBtn.disabled = false;
 })();
