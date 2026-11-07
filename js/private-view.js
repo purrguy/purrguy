@@ -177,9 +177,28 @@
   // Rewrite links so clicks stay within the proxy
   function rewriteUrls(html, origin) {
     try {
-      return html
-        .replace(/<base[^>]*>/i, '') // remove existing base
-        .replace(/<head>/i, '<head><base href="' + origin + '/">');
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+
+      // Remove existing base tag
+      const existingBase = doc.querySelector('base');
+      if (existingBase) existingBase.remove();
+
+      // Inject base tag so relative URLs resolve against the original site
+      const head = doc.querySelector('head');
+      if (head) {
+        const base = doc.createElement('base');
+        base.href = origin + '/';
+        head.insertBefore(base, head.firstChild);
+      }
+
+      // Rewrite every absolute link to route through the private proxy
+      doc.querySelectorAll('a[href]').forEach((a) => {
+        const href = a.getAttribute('href');
+        if (!href || !/^https?:\/\//i.test(href)) return;
+        a.setAttribute('href', '/api/browse?target=' + encodeURIComponent(href));
+      });
+
+      return doc.documentElement.outerHTML;
     } catch {
       return html;
     }
@@ -196,7 +215,15 @@
       if (!a || a.target === '_blank' || a.download) return;
       e.preventDefault();
       e.stopPropagation();
-      navigate(a.href);
+
+      let target = a.href;
+      // Links rewritten by rewriteUrls are already proxy URLs — extract the original target
+      try {
+        const orig = new URL(target).searchParams.get('target');
+        if (orig) target = orig;
+      } catch {}
+
+      navigate(target);
     }, true);
 
     // GET form submission → submit through the proxy
