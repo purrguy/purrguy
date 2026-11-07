@@ -144,7 +144,8 @@ function absolute(base, href) {
   return base + '/' + href;
 }
 
-function parseResults(html, base, query) {
+function parseResults(html, base, query, rankQuery) {
+  const rank = rankQuery || query;
   const marker = /<div\s+class="movie"[^>]*id="(\d+)"/gi;
   const starts = [];
   let m;
@@ -199,7 +200,7 @@ function parseResults(html, base, query) {
   }
 
   const scored = items.map((item) => {
-    const s = scoreItem(query, item, item._index);
+    const s = scoreItem(rank, item, item._index);
     delete item._index;
     return { ...item, score: Math.round(s.score), exact: s.exact };
   });
@@ -294,39 +295,61 @@ async function handle(request) {
   if (!q) return json({ error: 'Missing q' }, 400);
   if (q.length > 160) return json({ error: 'Query too long' }, 400);
 
-  const attempts = [];
-  for (const base of BASES) {
-    attempts.push(base + '/index.php?do=search&subaction=search&story=' + encodeURIComponent(q));
-  }
-  for (const base of BASES) {
-    attempts.push(base + '/search/' + encodeURIComponent(q));
+  const deadline = Date.now() + DEADLINE;
+  const first = await runSearch(q, q, deadline, BASES);
+  if (first.items.length) {
+    return json({ query: q, exact: first.exact, items: first.items, source: first.source });
   }
 
-  const deadline = Date.now() + DEADLINE;
+  /* Typo fallback: the site's search needs a real substring, so try trimming the tail
+     ("Intersteler" -> "Interstel" matches "Interstellar") and rank against the original. */
+  const compact = q.replace(/\s+/g, ' ').trim();
+  const variants = [];
+  if (/^[a-z0-9 ]{7,}$/i.test(compact)) {
+    for (const cut of [1, 2, 3]) {
+      const v = compact.slice(0, compact.length - cut).trim();
+      if (v.length >= 6 && !variants.includes(v)) variants.push(v);
+    }
+  }
+
+  for (const v of variants) {
+    if (Date.now() > deadline) break;
+    const alt = await runSearch(v, q, deadline, BASES.slice(0, 1));
+    if (alt.items.length) {
+      return json({ query: q, exact: false, similar: true, items: alt.items, source: alt.source });
+    }
+  }
+
+  // No results is not a server failure — answer 200 so the client can show "similar movies".
+  return json({ query: q, exact: false, items: [], error: 'Search failed: ' + first.lastError }, 200);
+}
+
+async function runSearch(query, rankQuery, deadline, bases) {
+  const attempts = [];
+  for (const base of bases) {
+    attempts.push(base + '/index.php?do=search&subaction=search&story=' + encodeURIComponent(query));
+  }
+  for (const base of bases) {
+    attempts.push(base + '/search/' + encodeURIComponent(query));
+  }
+
   let lastError = '';
   for (const attempt of attempts) {
-    if (Date.now() > deadline) { lastError = 'timed out'; break; }
+    if (Date.now() > deadline) return { items: [], exact: false, lastError: 'timed out' };
     try {
       const page = await fetchPage(attempt);
       if (!page.ok) { lastError = 'HTTP ' + page.status; continue; }
       if (/Just a moment|cf-chl|challenge-platform/i.test(page.body)) { lastError = 'challenge'; continue; }
 
-      const base = new URL(page.url).origin;
-      const parsed = parseResults(page.body, base, q);
+      const origin = new URL(page.url).origin;
+      const parsed = parseResults(page.body, origin, query, rankQuery);
       if (parsed.items.length) {
-        return json({
-          query: q,
-          exact: parsed.exact,
-          items: parsed.items,
-          source: page.url
-        });
+        return { items: parsed.items, exact: parsed.exact, source: page.url };
       }
       lastError = 'no results';
     } catch (e) {
       lastError = String(e).slice(0, 120);
     }
   }
-
-  // No results is not a server failure — answer 200 so the client can show "similar movies".
-  return json({ query: q, exact: false, items: [], error: 'Search failed: ' + lastError }, 200);
+  return { items: [], exact: false, lastError };
 };
