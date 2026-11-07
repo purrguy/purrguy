@@ -123,54 +123,26 @@
     const isSearch = !isUrl(value);
     const url = isSearch ? null : ensureHttp(value);
 
-    loading.hidden = false;
-    loading.classList.remove('hidden');
-    errorEl.classList.add('hidden');
-    errorEl.setAttribute('hidden', '');
-    goBtn.disabled = true;
+    const apiUrl = isSearch
+      ? '/api/search?q=' + encodeURIComponent(value)
+      : '/api/browse?target=' + encodeURIComponent(url) + (selectedProxy ? '&proxy=' + encodeURIComponent(selectedProxy.url) : '');
 
-    try {
-      let res;
-      if (isSearch) {
-        res = await fetch('/api/search?q=' + encodeURIComponent(value), {
-          headers: { 'Accept': 'text/html' },
-          cache: 'no-store'
-        });
-      } else {
-        const params = new URLSearchParams({ target: url });
-        if (selectedProxy) params.set('proxy', selectedProxy.url);
-        res = await fetch('/api/browse?' + params.toString(), {
-          headers: { 'Accept': 'text/html' }
-        });
-      }
+    const res = await fetch(apiUrl, { cache: 'no-store', headers: { 'Accept': 'text/html' } });
+    if (!res.ok) throw new Error('Server returned ' + res.status);
 
-      if (!res.ok) throw new Error('Server returned ' + res.status);
+    const html = await res.text();
 
-      const html = await res.text();
+    /* The browse/search APIs already rewrite every absolute link to route
+       through /api/browse, so clicking keeps navigation inside the proxy.
+       Use srcdoc (not document.write, which leaves an empty iframe body). */
+    frame.srcdoc = html;
 
-      /* The browse/search APIs already rewrite every absolute link to route
-         through /api/browse, so clicking keeps navigation inside the proxy.
-         Use srcdoc (not document.write, which leaves an empty iframe body). */
-      frame.srcdoc = html;
-
-      if (!isSearch && res.headers.get('X-Browse-Direct') === '1' && selectedProxy) {
-        proxyStatus.textContent = 'Proxy blocked — loaded directly through Cloudflare instead.';
-        proxyStatus.className = 'proxy-status';
-      }
-
-      input.value = isSearch ? value : url;
-      loading.hidden = true;
-      loading.classList.add('hidden');
-      goBtn.disabled = false;
-    } catch (e) {
-      console.error(e);
-      loading.hidden = true;
-      loading.classList.add('hidden');
-      errorMsg.textContent = 'Unable to load page: ' + e.message;
-      errorEl.classList.remove('hidden');
-      errorEl.removeAttribute('hidden');
-      goBtn.disabled = false;
+    if (!isSearch && res.headers.get('X-Browse-Direct') === '1' && selectedProxy) {
+      proxyStatus.textContent = 'Proxy blocked — loaded directly through Cloudflare instead.';
+      proxyStatus.className = 'proxy-status';
     }
+
+    input.value = isSearch ? value : url;
   }
 
   // ---------- Events ----------
