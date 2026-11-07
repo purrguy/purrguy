@@ -108,13 +108,6 @@
   }
 
   // ---------- Navigate ----------
-  function setLoading(show) {
-    loading.hidden = !show;
-    loading.classList.toggle('hidden', !show);
-    errorEl.classList.add('hidden');
-    frame.hidden = show;
-  }
-
   async function navigate(value) {
     if (!value || !value.trim()) return;
     value = value.trim();
@@ -127,54 +120,31 @@
       ? '/api/search?q=' + encodeURIComponent(value)
       : '/api/browse?target=' + encodeURIComponent(url) + (selectedProxy ? '&proxy=' + encodeURIComponent(selectedProxy.url) : '');
 
-    const res = await fetch(apiUrl, { cache: 'no-store', headers: { 'Accept': 'text/html' } });
-    if (!res.ok) throw new Error('Server returned ' + res.status);
+    /* Remove the iframe's initial src="about:blank" so srcdoc takes effect */
+    frame.removeAttribute('src');
 
-    const html = await res.text();
+    try {
+      const res = await fetch(apiUrl, { cache: 'no-store', headers: { 'Accept': 'text/html' } });
+      if (!res.ok) throw new Error('Server returned ' + res.status);
 
-    /* The browse/search APIs already rewrite every absolute link to route
-       through /api/browse, so clicking keeps navigation inside the proxy.
-       Use srcdoc (not document.write, which leaves an empty iframe body). */
-    frame.srcdoc = html;
+      const html = await res.text();
 
-    if (!isSearch && res.headers.get('X-Browse-Direct') === '1' && selectedProxy) {
-      proxyStatus.textContent = 'Proxy blocked — loaded directly through Cloudflare instead.';
-      proxyStatus.className = 'proxy-status';
+      /* The browse/search APIs already rewrite every absolute link to route
+         through /api/browse, so clicking keeps navigation inside the proxy.
+         Use srcdoc (not document.write, which leaves an empty iframe body). */
+      frame.srcdoc = html;
+
+      input.value = isSearch ? value : url;
+    } catch (e) {
+      console.error(e);
+      errorMsg.textContent = 'Unable to load page: ' + e.message;
+      errorEl.classList.remove('hidden');
+      errorEl.removeAttribute('hidden');
     }
-
-    input.value = isSearch ? value : url;
   }
 
   // ---------- Events ----------
-  goBtn.addEventListener('click', () => {
-    const val = input.value;
-    if (!val || !val.trim()) return;
-    const trimmed = val.trim();
-    const isSearch = !(function (v) {
-      try { return new URL(v).protocol === 'http:' || new URL(v).protocol === 'https:'; } catch { return false; }
-    })(trimmed);
-    const url = isSearch ? null : ensureHttp(trimmed);
-    const apiUrl = isSearch
-      ? '/api/search?q=' + encodeURIComponent(trimmed)
-      : '/api/browse?target=' + encodeURIComponent(url) + (selectedProxy ? '&proxy=' + encodeURIComponent(selectedProxy.url) : '');
-    /* Remove the iframe's initial src="about:blank" so srcdoc takes effect */
-    frame.removeAttribute('src');
-    fetch(apiUrl, { cache: 'no-store', headers: { 'Accept': 'text/html' } })
-      .then(res => {
-        if (!res.ok) throw new Error('Server returned ' + res.status);
-        return res.text();
-      })
-      .then(html => {
-        frame.srcdoc = html;
-        input.value = isSearch ? trimmed : url;
-      })
-      .catch(e => {
-        console.error(e);
-        errorMsg.textContent = 'Unable to load page: ' + e.message;
-        errorEl.classList.remove('hidden');
-        errorEl.removeAttribute('hidden');
-      });
-  });
+  goBtn.addEventListener('click', () => navigate(input.value));
 
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') navigate(input.value);
