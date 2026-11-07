@@ -3,20 +3,27 @@
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
 const TIMEOUT = 15000;
 
+/* Order matters: Bing usually answers datacenter traffic; DuckDuckGo sometimes
+   serves a "select all squares containing a duck" bot challenge; Google often 429s. */
 const ENGINES = [
   {
-    name: 'duckduckgo',
-    url: (q) => 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(q)
-  },
-  {
     name: 'bing',
+    origin: 'https://www.bing.com',
     url: (q) => 'https://www.bing.com/search?q=' + encodeURIComponent(q) + '&count=20'
   },
   {
+    name: 'duckduckgo',
+    origin: 'https://html.duckduckgo.com',
+    url: (q) => 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(q)
+  },
+  {
     name: 'google',
+    origin: 'https://www.google.com',
     url: (q) => 'https://www.google.com/search?q=' + encodeURIComponent(q) + '&num=20'
   }
 ];
+
+const BLOCKED = /Just a moment|cf-chl|challenge-platform|unusual traffic|not a robot|complete the following challenge|select all squares|bots use duckduckgo|anomaly-modal|429 Too Many Requests/i;
 
 function clean(html) {
   return html
@@ -59,19 +66,20 @@ export const onRequestGet = async ({ request }) => {
       });
       const html = await res.text();
 
-      const blocked = /Just a moment|cf-chl|challenge-platform|unusual traffic|not a robot|429/i.test(html.slice(0, 4000));
-      if (res.ok && html.length > 1200 && !blocked) {
+      const blocked = res.status === 202 || BLOCKED.test(html.slice(0, 6000));
+      if (res.ok && !blocked && html.length > 1200) {
         return new Response(clean(html), {
           status: 200,
           headers: {
             'Content-Type': 'text/html; charset=utf-8',
             'Access-Control-Allow-Origin': '*',
             'Cache-Control': 'public, max-age=300',
-            'X-Search-Engine': engine.name
+            'X-Search-Engine': engine.name,
+            'X-Search-Origin': engine.origin
           }
         });
       }
-      last = engine.name + ' ' + res.status + (blocked ? ' (blocked)' : '');
+      last = engine.name + ' ' + res.status + (blocked ? ' (blocked)' : ' (empty)');
     } catch (e) {
       last = engine.name + ': ' + String(e).slice(0, 100);
     } finally {

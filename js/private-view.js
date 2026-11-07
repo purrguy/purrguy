@@ -140,7 +140,9 @@
       if (!res.ok) throw new Error('Server returned ' + res.status);
 
       const html = await res.text();
-      const baseOrigin = isSearch ? 'https://html.duckduckgo.com/' : new URL(url).origin;
+      const baseOrigin = isSearch
+        ? (res.headers.get('X-Search-Origin') || 'https://html.duckduckgo.com')
+        : new URL(url).origin;
       const rewritten = rewriteUrls(html, baseOrigin);
 
       // Load into iframe
