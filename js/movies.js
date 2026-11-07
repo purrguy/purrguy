@@ -156,6 +156,35 @@
     }
   }
 
+  /* The embedding player refuses requests that carry a Cloudflare Worker header
+     (HTTP 422), but it does allow cross-origin reads from purrguy.me. So pull the
+     player page straight from the browser; fall back to the server extractor. */
+  async function resolveStream(playerUrl) {
+    try {
+      const r = await fetch(playerUrl, {
+        cache: 'no-store',
+        credentials: 'omit',
+        referrerPolicy: 'no-referrer'
+      });
+      if (r.ok) {
+        const html = await r.text();
+        const m = html.match(/hls\s*:\s*["']([^"']+\.m3u8[^"']*)["']/i)
+          || html.match(/["']((?:https?:)?\\?\/\\?\/[^"']+\.m3u8[^"']*)["']/i);
+        if (m) return m[1].replace(/\\\//g, '/');
+      }
+    } catch (e) {
+      /* fall through to the server-side extractor */
+    }
+
+    try {
+      const res = await fetch('/api/movies?stream=' + encodeURIComponent(playerUrl));
+      const data = await res.json();
+      if (data.stream) return data.stream;
+    } catch (e) {}
+
+    return '';
+  }
+
   async function selectMovie(item, el) {
     currentMovie = item;
     currentPlayerPage = item.url;
@@ -178,9 +207,8 @@
       const data = await res.json();
       if (!data.player) throw new Error(data.error || 'No player found for this movie');
 
-      const sres = await fetch('/api/movies?stream=' + encodeURIComponent(data.player));
-      const sdata = await sres.json();
-      if (!sdata.stream) throw new Error(sdata.error || 'No video stream found');
+      const stream = await resolveStream(data.player);
+      if (!stream) throw new Error('No video stream found for this movie');
 
       titleEl.textContent = data.title || item.title;
       if (data.description) metaEl.textContent = data.description;
