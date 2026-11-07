@@ -157,6 +157,8 @@
     const apiUrl = isSearch
       ? '/api/search?q=' + encodeURIComponent(trimmed)
       : '/api/browse?target=' + encodeURIComponent(url) + (selectedProxy ? '&proxy=' + encodeURIComponent(selectedProxy.url) : '');
+    /* Remove the iframe's initial src="about:blank" so srcdoc takes effect */
+    frame.removeAttribute('src');
     fetch(apiUrl, { cache: 'no-store', headers: { 'Accept': 'text/html' } })
       .then(res => {
         if (!res.ok) throw new Error('Server returned ' + res.status);
@@ -164,9 +166,6 @@
       })
       .then(html => {
         frame.srcdoc = html;
-        if (!isSearch && selectedProxy) {
-          // X-Browse-Direct not available via fetch in this path; skip status message
-        }
         input.value = isSearch ? trimmed : url;
       })
       .catch(e => {
