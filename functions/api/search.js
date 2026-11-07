@@ -73,7 +73,7 @@ export const onRequestGet = async ({ request }) => {
           headers: {
             'Content-Type': 'text/html; charset=utf-8',
             'Access-Control-Allow-Origin': '*',
-            'Cache-Control': 'public, max-age=300',
+            'Cache-Control': 'no-store',
             'X-Search-Engine': engine.name,
             'X-Search-Origin': engine.origin
           }

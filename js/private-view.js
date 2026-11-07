@@ -127,7 +127,8 @@
       let res;
       if (isSearch) {
         res = await fetch('/api/search?q=' + encodeURIComponent(value), {
-          headers: { 'Accept': 'text/html' }
+          headers: { 'Accept': 'text/html' },
+          cache: 'no-store'
         });
       } else {
         const params = new URLSearchParams({ target: url });
