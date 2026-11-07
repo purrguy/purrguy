@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
 
-  <title>Movies — search &amp; watch without the noise | Purrguy</title>
+  <title>Movies — search &amp; watch without the noise | purrguy</title>
   <meta name="description" content="Search for a movie and watch it right here. A clean, resizable player with a flippable mobile fullscreen — no Shorts, no feed, no algorithm.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://purrguy.me/movies">
 
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Purrguy">
+  <meta property="og:site_name" content="purrguy">
   <meta property="og:title" content="Movies — search &amp; watch without the noise">
   <meta property="og:description" content="Search a movie, press play, flip it fullscreen on mobile. Same player as YouTube View.">
   <meta property="og:url" content="https://purrguy.me/movies">
@@ -20,9 +20,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="/css/style.css?v=20261107c">
-  <link rel="stylesheet" href="/css/youtube-view.css?v=20261107c">
-  <link rel="stylesheet" href="/css/movies.css?v=20261107c">
+  <link rel="stylesheet" href="/css/style.css?v=20261107g">
+  <link rel="stylesheet" href="/css/youtube-view.css?v=20261107g">
+  <link rel="stylesheet" href="/css/movies.css?v=20261107g">
 </head>
 <body id="top">
 
@@ -71,12 +71,13 @@
 
           <div id="mv-video-box" class="yv-video-box hidden">
             <div class="yv-video-inner">
-              <iframe id="mv-iframe"
-                      src=""
-                      title="Movie player"
-                      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                      allowfullscreen
-                      referrerpolicy="origin"></iframe>
+              <video id="mv-video"
+                     class="mv-video"
+                     controls
+                     playsinline
+                     preload="metadata"
+                     crossorigin="anonymous"
+                     title="Movie player"></video>
             </div>
             <div class="yv-resize-handle" id="mv-resize-handle" aria-hidden="true">&#x21F6;</div>
           </div>
@@ -96,10 +97,11 @@
     </div>
 
     <footer class="yv-foot">
-      <p>Movies are streamed from the Kinogo mirror network. Purrguy just gives you a calmer player.</p>
+      <p>Movies are streamed from the Kinogo mirror network. purrguy just gives you a calmer player.</p>
     </footer>
   </main>
 
-  <script src="/js/movies.js?v=20261107b"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
+  <script src="/js/movies.js?v=20261107g"></script>
 </body>
 </html>

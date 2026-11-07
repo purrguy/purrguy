@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff">
 
-  <title>Private View — browse &amp; search without leaving the tab | Purrguy</title>
-  <meta name="description" content="Open any URL or search Google without leaving the page. Private View by Purrguy routes requests through a proxy you choose. No history stored.">
+  <title>Private View — browse &amp; search without leaving the tab | purrguy</title>
+  <meta name="description" content="Open any URL or search Google without leaving the page. Private View by purrguy routes requests through a proxy you choose. No history stored.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://purrguy.me/private-view">
 
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Purrguy">
+  <meta property="og:site_name" content="purrguy">
   <meta property="og:title" content="Private View — a quieter way to browse">
   <meta property="og:description" content="Search or open any URL in-tab through a proxy you pick. No accounts, no history saved.">
   <meta property="og:url" content="https://purrguy.me/private-view">
@@ -20,8 +20,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="/css/style.css?v=20261107c">
-  <link rel="stylesheet" href="/css/private-view.css?v=20261107c">
+  <link rel="stylesheet" href="/css/style.css?v=20261107g">
+  <link rel="stylesheet" href="/css/private-view.css?v=20261107g">
 </head>
 <body id="top">
 
@@ -81,7 +81,10 @@
       <section class="pv-viewport">
         <div class="pv-frame-wrap">
           <iframe id="pv-frame" src="about:blank" title="Private browsing" allow="fullscreen"></iframe>
-          <div id="pv-loading" class="pv-loading">Loading through proxy&hellip;</div>
+          <div id="pv-empty" class="pv-empty">
+            <p>Type a URL or search above to start.</p>
+          </div>
+          <div id="pv-loading" class="pv-loading" hidden>Loading through proxy&hellip;</div>
           <div id="pv-error" class="pv-error hidden">
             <p id="pv-error-msg">Unable to load through the selected proxy.</p>
             <button id="pv-retry" class="btn btn-ghost" type="button">Try again</button>
@@ -95,6 +98,6 @@
     </footer>
   </main>
 
-  <script src="/js/private-view.js?v=20261107e"></script>
+  <script src="/js/private-view.js?v=20261107g"></script>
 </body>
 </html>

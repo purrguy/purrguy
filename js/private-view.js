@@ -7,6 +7,7 @@
   const loading = document.getElementById('pv-loading');
   const errorEl = document.getElementById('pv-error');
   const errorMsg = document.getElementById('pv-error-msg');
+  const emptyEl = document.getElementById('pv-empty');
   const retryBtn = document.getElementById('pv-retry');
   const proxySelect = document.getElementById('proxy-select');
   const proxyTestBtn = document.getElementById('proxy-test');
@@ -109,6 +110,7 @@
   // ---------- Navigate ----------
   function setLoading(show) {
     loading.hidden = !show;
+    loading.classList.toggle('hidden', !show);
     errorEl.classList.add('hidden');
     frame.hidden = show;
   }
@@ -116,6 +118,7 @@
   async function navigate(value) {
     if (!value || !value.trim()) return;
     value = value.trim();
+    if (emptyEl) emptyEl.hidden = true;
 
     const isSearch = !isUrl(value);
     const url = isSearch ? null : ensureHttp(value);
@@ -199,4 +202,6 @@
   // ---------- Init ----------
   loadProxies();
   goBtn.disabled = false;
+  setLoading(false);
+  if (emptyEl) emptyEl.hidden = false;
 })();

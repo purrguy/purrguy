@@ -234,6 +234,39 @@ async function handle(request) {
   const url = new URL(request.url);
   const q = (url.searchParams.get('q') || '').trim();
   const filmUrl = (url.searchParams.get('url') || '').trim();
+  const embedUrl = (url.searchParams.get('stream') || '').trim();
+
+  /* ---------- direct video stream (extracted from the embed player) ---------- */
+  if (embedUrl) {
+    let target;
+    try {
+      target = new URL(embedUrl);
+    } catch {
+      return json({ error: 'Invalid stream url' }, 400);
+    }
+    if (!/^https?:$/.test(target.protocol)) return json({ error: 'Invalid stream url' }, 400);
+    if (!/(^|\.)nextembed\.ws$/i.test(target.hostname)) {
+      return json({ error: 'Stream host not allowed' }, 400);
+    }
+
+    let page;
+    try {
+      page = await fetchPage(target.href);
+    } catch (e) {
+      return json({ error: 'Could not reach the player', detail: String(e).slice(0, 120) }, 200);
+    }
+    if (!page.ok) return json({ error: 'Player returned ' + page.status }, 200);
+
+    const html = page.body;
+    const match = html.match(/hls\s*:\s*["']([^"']+\.m3u8[^"']*)["']/i)
+      || html.match(/["'](https?:\\?\/\\?\/[^"']+\.m3u8[^"']*)["']/i);
+
+    let stream = match ? decode(match[1]) : '';
+    stream = stream.replace(/\\\//g, '/');
+
+    if (!stream) return json({ error: 'No video stream found for this movie' }, 200);
+    return json({ stream, kind: 'hls' });
+  }
 
   /* ---------- details + player ---------- */
   if (filmUrl) {

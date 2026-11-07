@@ -1,4 +1,4 @@
-/* Movies client logic — search, play, and the shared flip-fullscreen player */
+/* Movies client logic — search, native HLS playback, and the shared flip-fullscreen player */
 
 (function () {
   'use strict';
@@ -9,7 +9,7 @@
   const noteEl = document.getElementById('mv-note');
   const placeholder = document.getElementById('mv-placeholder');
   const videoBox = document.getElementById('mv-video-box');
-  const iframe = document.getElementById('mv-iframe');
+  const video = document.getElementById('mv-video');
   const fullscreenBtn = document.getElementById('mv-fullscreen');
   const resetBtn = document.getElementById('mv-reset');
   const sourceLink = document.getElementById('mv-source');
@@ -20,6 +20,8 @@
 
   let currentMovie = null;
   let currentPlayerPage = '';
+  let currentStream = '';
+  let hls = null;
 
   const isPhone = () =>
     window.matchMedia('(max-width: 820px)').matches ||
@@ -95,7 +97,64 @@
     });
   }
 
-  /* ---------------- Load a movie ---------------- */
+  /* ---------------- Player ---------------- */
+
+  function teardownVideo() {
+    if (hls) {
+      hls.destroy();
+      hls = null;
+    }
+    currentStream = '';
+    try { video.pause(); } catch (e) {}
+    video.removeAttribute('src');
+    try { video.load(); } catch (e) {}
+  }
+
+  function showPlaybackError(message) {
+    placeholder.innerHTML =
+      '<div class="yv-placeholder-icon">&#9888;</div><p>Could not play this movie.</p>' +
+      '<p class="yv-hint">' + escapeHtml(message) + '</p>';
+    placeholder.classList.remove('hidden');
+    videoBox.classList.add('hidden');
+  }
+
+  function playStream(url) {
+    teardownVideo();
+    currentStream = url;
+
+    let ready = false;
+    const onReady = () => {
+      if (ready) return;
+      ready = true;
+      placeholder.classList.add('hidden');
+      video.play().catch(() => { /* autoplay may need a tap — the controls are right there */ });
+    };
+
+    video.addEventListener('loadedmetadata', onReady);
+
+    if (window.Hls && window.Hls.isSupported()) {
+      hls = new window.Hls({ maxBufferLength: 30, enableWorker: true });
+      hls.on(window.Hls.Events.MANIFEST_PARSED, onReady);
+      hls.on(window.Hls.Events.ERROR, (_, data) => {
+        if (!data || !data.fatal) return;
+        if (data.type === window.Hls.ErrorTypes.NETWORK_ERROR) {
+          hls.startLoad();
+          return;
+        }
+        if (data.type === window.Hls.ErrorTypes.MEDIA_ERROR) {
+          hls.recoverMediaError();
+          return;
+        }
+        showPlaybackError('The video stream stopped responding.');
+      });
+      hls.loadSource(url);
+      hls.attachMedia(video);
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = url;
+    } else {
+      showPlaybackError('This browser does not support HLS video.');
+    }
+  }
 
   async function selectMovie(item, el) {
     currentMovie = item;
@@ -105,10 +164,11 @@
     if (el) el.classList.add('active');
 
     closeFS();
+    teardownVideo();
+    videoBox.classList.add('hidden');
     placeholder.classList.remove('hidden');
     placeholder.innerHTML =
       '<div class="yv-placeholder-icon">&#127916;</div><p>Loading ' + escapeHtml(item.title) + '…</p>';
-    videoBox.classList.add('hidden');
 
     titleEl.textContent = item.title || 'Movie';
     metaEl.textContent = [item.year, item.genre, item.quality].filter(Boolean).join(' · ');
@@ -118,35 +178,31 @@
       const data = await res.json();
       if (!data.player) throw new Error(data.error || 'No player found for this movie');
 
-      iframe.src = data.player;
-      placeholder.classList.add('hidden');
-      videoBox.classList.remove('hidden');
+      const sres = await fetch('/api/movies?stream=' + encodeURIComponent(data.player));
+      const sdata = await sres.json();
+      if (!sdata.stream) throw new Error(sdata.error || 'No video stream found');
 
       titleEl.textContent = data.title || item.title;
-
-      if (data.poster) {
-        // Nothing visual needed — the player covers the frame.
-      }
+      if (data.description) metaEl.textContent = data.description;
 
       currentPlayerPage = data.source || item.url;
-
-      if (data.description) {
-        metaEl.textContent = data.description;
-      }
-
       sourceLink.href = currentPlayerPage;
       sourceLink.style.display = 'inline-flex';
 
+      video.poster = data.poster ? '/api/img?u=' + encodeURIComponent(data.poster) : '';
+
+      videoBox.classList.remove('hidden');
       if (!isPhone()) {
         videoBox.style.width = '720px';
         videoBox.style.height = '405px';
       }
-    } catch (e) {
+
       placeholder.innerHTML =
-        '<div class="yv-placeholder-icon">&#9888;</div><p>Could not load this movie.</p>' +
-        '<p class="yv-hint">' + escapeHtml(e.message) + '</p>';
-      placeholder.classList.remove('hidden');
-      videoBox.classList.add('hidden');
+        '<div class="yv-placeholder-icon">&#127916;</div><p>Buffering ' + escapeHtml(data.title || item.title) + '…</p>';
+
+      playStream(sdata.stream);
+    } catch (e) {
+      showPlaybackError(e.message);
     }
   }
 
@@ -224,27 +280,26 @@
   const closeBtn = fsUI.querySelector('#mv-fs-close');
 
   let fsOpen = false;
-  let playing = true;
   let prevW = '';
   let prevH = '';
 
   function setPlayIcon() {
+    const playing = !video.paused && !video.ended;
     playBtn.innerHTML = playing ? '&#10074;&#10074;' : '&#9654;';
     playBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
   }
 
-  function playerCommand(func) {
-    const messages = [
-      { event: 'command', func: func, args: [] },
-      { method: func === 'playVideo' ? 'play' : 'pause' },
-      { api: 'playerjs', method: func === 'playVideo' ? 'play' : 'pause' }
-    ];
-    messages.forEach((m) => {
-      try {
-        iframe.contentWindow.postMessage(typeof m === 'string' ? m : JSON.stringify(m), '*');
-      } catch (e) { /* not ready */ }
-    });
-  }
+  video.addEventListener('play', setPlayIcon);
+  video.addEventListener('pause', setPlayIcon);
+  video.addEventListener('ended', setPlayIcon);
+
+  playBtn.addEventListener('click', () => {
+    if (video.paused || video.ended) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  });
 
   const isPortrait = () => window.innerHeight > window.innerWidth;
 
@@ -254,7 +309,7 @@
   }
 
   function openFS() {
-    if (!currentMovie) return;
+    if (!currentMovie || !currentStream) return;
     fsOpen = true;
 
     prevW = videoBox.style.width;
@@ -275,9 +330,7 @@
     videoBox.style.setProperty('--fsy', '0px');
 
     layoutFS();
-    playing = true;
     setPlayIcon();
-    playerCommand('playVideo');
   }
 
   function closeFS() {
@@ -318,12 +371,6 @@
   });
 
   closeBtn.addEventListener('click', closeFS);
-
-  playBtn.addEventListener('click', () => {
-    playing = !playing;
-    playerCommand(playing ? 'playVideo' : 'pauseVideo');
-    setPlayIcon();
-  });
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && fsOpen) closeFS();
