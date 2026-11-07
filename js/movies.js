@@ -72,8 +72,9 @@
       el.type = 'button';
       el.className = 'mv-item';
 
-      const poster = item.poster
-        ? '<img class="mv-poster" loading="lazy" src="' + escapeHtml(item.poster) + '" alt="" onerror="this.style.display=\'none\'">'
+      const posterSrc = item.poster ? '/api/img?u=' + encodeURIComponent(item.poster) : '';
+      const poster = posterSrc
+        ? '<img class="mv-poster" loading="lazy" src="' + escapeHtml(posterSrc) + '" alt="" onerror="this.style.display=\'none\'">'
         : '<span class="mv-poster-empty">&#127916;</span>';
 
       const sub = [item.year, item.genre, item.quality].filter(Boolean).join(' · ');

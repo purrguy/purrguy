@@ -222,6 +222,14 @@ function unwrapImages(html) {
 }
 
 export const onRequestGet = async ({ request }) => {
+  try {
+    return await handle(request);
+  } catch (e) {
+    return json({ error: 'Movies service error', detail: String(e).slice(0, 160), items: [], exact: false }, 200);
+  }
+};
+
+async function handle(request) {
   const url = new URL(request.url);
   const q = (url.searchParams.get('q') || '').trim();
   const filmUrl = (url.searchParams.get('url') || '').trim();
@@ -319,5 +327,6 @@ export const onRequestGet = async ({ request }) => {
     }
   }
 
-  return json({ query: q, exact: false, items: [], error: 'Search failed: ' + lastError }, 502);
+  // No results is not a server failure — answer 200 so the client can show "similar movies".
+  return json({ query: q, exact: false, items: [], error: 'Search failed: ' + lastError }, 200);
 };
