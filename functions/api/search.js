@@ -25,8 +25,8 @@ const ENGINES = [
 
 const BLOCKED = /Just a moment|cf-chl|challenge-platform|unusual traffic|not a robot|complete the following challenge|select all squares|bots use duckduckgo|anomaly-modal|429 Too Many Requests/i;
 
-function clean(html) {
-  return html
+function clean(html, origin) {
+  html = html
     /* DuckDuckGo wraps results in /l/?uddg= redirects — unwrap them */
     .replace(/(?:https?:)?\/\/duckduckgo\.com\/l\/\?uddg=([^"'&<>\s]+)[^"'<>]*/gi, (m, enc) => {
       try {
@@ -37,6 +37,15 @@ function clean(html) {
     })
     /* strip DDG's own tracking pixel scripts that would 404 through the iframe */
     .replace(/<script[^>]+src="[^"]*duckduckgo[^"]*"[^>]*><\/script>/gi, '');
+
+  // Rewrite absolute links so clicks stay within the private proxy
+  try {
+    html = html.replace(/<base[^>]*>/i, '');
+    html = html.replace(/<head>/i, '<head><base href="' + origin + '/">');
+    html = html.replace(/(<a\s+[^>]*?\shref=["'])((?:https?:)?\/\/[^"']+)(["'])/gi,
+      (m, prefix, href, quote) => prefix + '/api/browse?target=' + encodeURIComponent(href) + quote);
+  } catch {}
+  return html;
 }
 
 export const onRequestGet = async ({ request }) => {
@@ -68,7 +77,7 @@ export const onRequestGet = async ({ request }) => {
 
       const blocked = res.status === 202 || BLOCKED.test(html.slice(0, 6000));
       if (res.ok && !blocked && html.length > 1200) {
-        return new Response(clean(html), {
+        return new Response(clean(html, engine.origin), {
           status: 200,
           headers: {
             'Content-Type': 'text/html; charset=utf-8',

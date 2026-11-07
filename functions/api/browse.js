@@ -24,6 +24,30 @@ async function get(target, proxy, signal) {
   return { res, body, contentType };
 }
 
+/* Rewrite absolute links and form actions so they route through the proxy,
+   and inject a <base> tag so relative URLs resolve against the original site. */
+function rewriteHtml(html, origin) {
+  try {
+    // Remove any existing base tag
+    let out = html.replace(/<base[^>]*>/i, '');
+
+    // Inject base tag right after <head>
+    out = out.replace(/<head>/i, '<head><base href="' + origin + '/">');
+
+    // Rewrite absolute anchor hrefs
+    out = out.replace(/(<a\s+[^>]*?\shref=["'])((?:https?:)?\/\/[^"']+)(["'])/gi,
+      (m, prefix, href, quote) => prefix + '/api/browse?target=' + encodeURIComponent(href) + quote);
+
+    // Rewrite absolute form actions (GET forms stay in the proxy)
+    out = out.replace(/(<form\s+[^>]*?\saction=["'])((?:https?:)?\/\/[^"']+)(["'])/gi,
+      (m, prefix, action, quote) => prefix + '/api/browse?target=' + encodeURIComponent(action) + quote);
+
+    return out;
+  } catch {
+    return html;
+  }
+}
+
 export const onRequestGet = async ({ request }) => {
   const url = new URL(request.url);
   const target = url.searchParams.get('target');
@@ -67,7 +91,13 @@ export const onRequestGet = async ({ request }) => {
 
     if (!result) throw new Error('No response');
 
-    return new Response(result.body, {
+    let body = result.body;
+    const isHtml = /text\/html/i.test(result.contentType);
+    if (isHtml) {
+      body = rewriteHtml(body, targetUrl.origin);
+    }
+
+    return new Response(body, {
       status: result.res.status,
       headers: {
         'Content-Type': result.contentType,

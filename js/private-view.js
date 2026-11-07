@@ -144,18 +144,11 @@
       if (!res.ok) throw new Error('Server returned ' + res.status);
 
       const html = await res.text();
-      const baseOrigin = isSearch
-        ? (res.headers.get('X-Search-Origin') || 'https://html.duckduckgo.com')
-        : new URL(url).origin;
-      const rewritten = rewriteUrls(html, baseOrigin);
 
-      // Load into iframe
-      const doc = frame.contentDocument || frame.contentWindow.document;
-      doc.open();
-      doc.write(rewritten);
-      doc.close();
-
-      setupFrameLinks(frame);
+      /* The browse/search APIs already rewrite every absolute link to route
+         through /api/browse, so clicking keeps navigation inside the proxy.
+         Use srcdoc (not document.write, which leaves an empty iframe body). */
+      frame.srcdoc = html;
 
       if (!isSearch && res.headers.get('X-Browse-Direct') === '1' && selectedProxy) {
         proxyStatus.textContent = 'Proxy blocked — loaded directly through Cloudflare instead.';
@@ -172,64 +165,6 @@
       errorEl.classList.remove('hidden');
       goBtn.disabled = false;
     }
-  }
-
-  // Rewrite links so clicks stay within the proxy
-  function rewriteUrls(html, origin) {
-    try {
-      // Remove any existing base tag
-      html = html.replace(/<base[^>]*>/i, '');
-
-      // Inject base tag so relative URLs resolve against the original site
-      html = html.replace(/<head>/i, '<head><base href="' + origin + '/">');
-
-      // Rewrite every absolute link to route through the private proxy
-      html = html.replace(/(<a\s+[^>]*?\shref=["'])((?:https?:)?\/\/[^"']+)(["'])/gi, (match, prefix, href, quote) => {
-        return prefix + '/api/browse?target=' + encodeURIComponent(href) + quote;
-      });
-
-      return html;
-    } catch {
-      return html;
-    }
-  }
-
-  // ---------- Keep navigation inside the private browser ----------
-  function setupFrameLinks(frameEl) {
-    const doc = frameEl.contentDocument || frameEl.contentWindow.document;
-    if (!doc) return;
-
-    // Clicking a link → open it through the proxy, not the live site
-    doc.addEventListener('click', (e) => {
-      const a = e.target.closest('a[href]');
-      if (!a || a.target === '_blank' || a.download) return;
-      e.preventDefault();
-      e.stopPropagation();
-
-      let target = a.href;
-      // Links rewritten by rewriteUrls are already proxy URLs — extract the original target
-      try {
-        const orig = new URL(target).searchParams.get('target');
-        if (orig) target = orig;
-      } catch {}
-
-      navigate(target);
-    }, true);
-
-    // GET form submission → submit through the proxy
-    doc.addEventListener('submit', (e) => {
-      const form = e.target.closest('form');
-      if (!form) return;
-      if ((form.method || 'GET').toUpperCase() !== 'GET') return;
-      e.preventDefault();
-      e.stopPropagation();
-      if (!form.action) return;
-      const params = new URLSearchParams();
-      try {
-        new FormData(form).forEach((v, k) => params.append(k, v));
-      } catch {}
-      navigate(form.action + (form.action.includes('?') ? '&' : '?') + params.toString());
-    }, true);
   }
 
   // ---------- Events ----------
