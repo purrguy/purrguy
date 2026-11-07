@@ -155,11 +155,14 @@
       doc.write(rewritten);
       doc.close();
 
+      setupFrameLinks(frame);
+
       if (!isSearch && res.headers.get('X-Browse-Direct') === '1' && selectedProxy) {
         proxyStatus.textContent = 'Proxy blocked — loaded directly through Cloudflare instead.';
         proxyStatus.className = 'proxy-status';
       }
 
+      input.value = isSearch ? value : url;
       setLoading(false);
       goBtn.disabled = false;
     } catch (e) {
@@ -180,6 +183,36 @@
     } catch {
       return html;
     }
+  }
+
+  // ---------- Keep navigation inside the private browser ----------
+  function setupFrameLinks(frameEl) {
+    const doc = frameEl.contentDocument || frameEl.contentWindow.document;
+    if (!doc) return;
+
+    // Clicking a link → open it through the proxy, not the live site
+    doc.addEventListener('click', (e) => {
+      const a = e.target.closest('a[href]');
+      if (!a || a.target === '_blank' || a.download) return;
+      e.preventDefault();
+      e.stopPropagation();
+      navigate(a.href);
+    }, true);
+
+    // GET form submission → submit through the proxy
+    doc.addEventListener('submit', (e) => {
+      const form = e.target.closest('form');
+      if (!form) return;
+      if ((form.method || 'GET').toUpperCase() !== 'GET') return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (!form.action) return;
+      const params = new URLSearchParams();
+      try {
+        new FormData(form).forEach((v, k) => params.append(k, v));
+      } catch {}
+      navigate(form.action + (form.action.includes('?') ? '&' : '?') + params.toString());
+    }, true);
   }
 
   // ---------- Events ----------
