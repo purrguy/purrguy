@@ -123,7 +123,10 @@
     const isSearch = !isUrl(value);
     const url = isSearch ? null : ensureHttp(value);
 
-    setLoading(true);
+    loading.hidden = false;
+    loading.classList.remove('hidden');
+    errorEl.classList.add('hidden');
+    errorEl.setAttribute('hidden', '');
     goBtn.disabled = true;
 
     try {
@@ -156,13 +159,16 @@
       }
 
       input.value = isSearch ? value : url;
-      setLoading(false);
+      loading.hidden = true;
+      loading.classList.add('hidden');
       goBtn.disabled = false;
     } catch (e) {
       console.error(e);
-      setLoading(false);
+      loading.hidden = true;
+      loading.classList.add('hidden');
       errorMsg.textContent = 'Unable to load page: ' + e.message;
       errorEl.classList.remove('hidden');
+      errorEl.removeAttribute('hidden');
       goBtn.disabled = false;
     }
   }
