@@ -146,7 +146,36 @@
   }
 
   // ---------- Events ----------
-  goBtn.addEventListener('click', () => navigate(input.value));
+  goBtn.addEventListener('click', () => {
+    const val = input.value;
+    if (!val || !val.trim()) return;
+    const trimmed = val.trim();
+    const isSearch = !(function (v) {
+      try { return new URL(v).protocol === 'http:' || new URL(v).protocol === 'https:'; } catch { return false; }
+    })(trimmed);
+    const url = isSearch ? null : ensureHttp(trimmed);
+    const apiUrl = isSearch
+      ? '/api/search?q=' + encodeURIComponent(trimmed)
+      : '/api/browse?target=' + encodeURIComponent(url) + (selectedProxy ? '&proxy=' + encodeURIComponent(selectedProxy.url) : '');
+    fetch(apiUrl, { cache: 'no-store', headers: { 'Accept': 'text/html' } })
+      .then(res => {
+        if (!res.ok) throw new Error('Server returned ' + res.status);
+        return res.text();
+      })
+      .then(html => {
+        frame.srcdoc = html;
+        if (!isSearch && selectedProxy) {
+          // X-Browse-Direct not available via fetch in this path; skip status message
+        }
+        input.value = isSearch ? trimmed : url;
+      })
+      .catch(e => {
+        console.error(e);
+        errorMsg.textContent = 'Unable to load page: ' + e.message;
+        errorEl.classList.remove('hidden');
+        errorEl.removeAttribute('hidden');
+      });
+  });
 
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') navigate(input.value);
