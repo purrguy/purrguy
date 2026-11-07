@@ -177,28 +177,18 @@
   // Rewrite links so clicks stay within the proxy
   function rewriteUrls(html, origin) {
     try {
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-
-      // Remove existing base tag
-      const existingBase = doc.querySelector('base');
-      if (existingBase) existingBase.remove();
+      // Remove any existing base tag
+      html = html.replace(/<base[^>]*>/i, '');
 
       // Inject base tag so relative URLs resolve against the original site
-      const head = doc.querySelector('head');
-      if (head) {
-        const base = doc.createElement('base');
-        base.href = origin + '/';
-        head.insertBefore(base, head.firstChild);
-      }
+      html = html.replace(/<head>/i, '<head><base href="' + origin + '/">');
 
       // Rewrite every absolute link to route through the private proxy
-      doc.querySelectorAll('a[href]').forEach((a) => {
-        const href = a.getAttribute('href');
-        if (!href || !/^https?:\/\//i.test(href)) return;
-        a.setAttribute('href', '/api/browse?target=' + encodeURIComponent(href));
+      html = html.replace(/(<a\s+[^>]*?\shref=["'])((?:https?:)?\/\/[^"']+)(["'])/gi, (match, prefix, href, quote) => {
+        return prefix + '/api/browse?target=' + encodeURIComponent(href) + quote;
       });
 
-      return doc.documentElement.outerHTML;
+      return html;
     } catch {
       return html;
     }
