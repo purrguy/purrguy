@@ -2,7 +2,8 @@
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
 const BASES = ['https://kinogo.la', 'https://kinogo.mn', 'https://kinogo.film'];
-const TIMEOUT = 15000;
+const TIMEOUT = 9000;
+const DEADLINE = 22000;
 
 const JSON_HEADERS = {
   'Content-Type': 'application/json; charset=utf-8',
@@ -103,6 +104,9 @@ function scoreItem(query, item, index) {
   if (tn === qn) score += 100;
   else if (tn.startsWith(qn)) score += 50;
   else if (qn && tn.includes(qn)) score += 30;
+
+  // A single-word query that opens the title ("Матрица (1999)") beats a title that merely contains it.
+  if (qTokens.length === 1 && tTokens[0] && tokenMatch(qTokens[0], tTokens[0])) score += 25;
 
   const yearMatch = qn.match(/\b(19|20)\d{2}\b/);
   if (yearMatch && String(item.year) === yearMatch[0]) score += 40;
@@ -290,8 +294,10 @@ export const onRequestGet = async ({ request }) => {
     attempts.push(base + '/search/' + encodeURIComponent(q));
   }
 
+  const deadline = Date.now() + DEADLINE;
   let lastError = '';
   for (const attempt of attempts) {
+    if (Date.now() > deadline) { lastError = 'timed out'; break; }
     try {
       const page = await fetchPage(attempt);
       if (!page.ok) { lastError = 'HTTP ' + page.status; continue; }
