@@ -228,7 +228,7 @@
       placeholder.innerHTML =
         '<div class="yv-placeholder-icon">&#127916;</div><p>Buffering ' + escapeHtml(data.title || item.title) + '…</p>';
 
-      playStream(sdata.stream);
+      playStream(stream);
     } catch (e) {
       showPlaybackError(e.message);
     }
